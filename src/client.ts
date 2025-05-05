@@ -66,13 +66,14 @@ export async function DiscordClient(bot_token: string, gemini_key: string, activ
                 const response = await chat.sendMessage({
                     message: `user: ${msg.member.nickname || msg.author.displayName} text: ${message}`,
                     config: {
-                        systemInstruction: system_config + inforamtion_padding + modelInformations
+                        systemInstruction: system_config + inforamtion_padding + modelInformations,
+                        maxOutputTokens: 300
                     }
                 });
 
-                msg.channel.send(response.text);
+                msg.channel.send(response.text.slice(0, 1700));
 
-                writeLog(`user: aimodel ; text: ${response.text}`);
+                writeLog(`user: aimodel ; text: ${response.text.slice(0, 1700)}`);
 
                 history.push({
                     "role": "user",
@@ -86,7 +87,7 @@ export async function DiscordClient(bot_token: string, gemini_key: string, activ
                         "role": "model",
                         "parts": [
                             {
-                                "text": `user: aimodel ; text: ${response.text}`
+                                "text": `${response.text}`
                             }
                         ]
                     })
