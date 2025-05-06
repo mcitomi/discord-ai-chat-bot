@@ -55,7 +55,7 @@ export async function DiscordClient(bot_token: string, gemini_key: string, activ
 
                 const message = msg.content.replaceAll(`<@${client.user.id}>`, "");
 
-                if(message.includes("user:") || message.includes("text:")) {
+                if (message.includes("user:") || message.includes("text:")) {
                     msg.channel.send("⚠️ Illegal characters!");
                     return;
                 }
@@ -75,14 +75,15 @@ export async function DiscordClient(bot_token: string, gemini_key: string, activ
 
                 writeLog(`user: aimodel ; text: ${response.text.slice(0, 1700)}`);
 
-                history.push({
-                    "role": "user",
-                    "parts": [
-                        {
-                            "text": `user: ${msg.member.nickname || msg.author.displayName} ; text: ${message}`
-                        }
-                    ]
-                },
+                history.push(
+                    {
+                        "role": "user",
+                        "parts": [
+                            {
+                                "text": `user: ${msg.member.nickname || msg.author.displayName} ; text: ${message}`
+                            }
+                        ]
+                    },
                     {
                         "role": "model",
                         "parts": [
@@ -90,7 +91,8 @@ export async function DiscordClient(bot_token: string, gemini_key: string, activ
                                 "text": `${response.text}`
                             }
                         ]
-                    })
+                    }
+                )
             }
         });
 

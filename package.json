@@ -1,6 +1,7 @@
 {
   "name": "discord-ai-chat-bot",
   "module": "index.ts",
+  "version": "1.0.0",
   "type": "module",
   "private": true,
   "devDependencies": {
