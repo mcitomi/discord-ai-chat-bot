@@ -1,15 +1,15 @@
-import { ActivityType, Client, GatewayIntentBits } from "discord.js";
+import { ActivityType, Client, GatewayIntentBits, PermissionFlagsBits, REST, Routes, SlashCommandBuilder, AttachmentBuilder, type Interaction, MessageFlags } from "discord.js";
 import { GoogleGenAI, type Content, type Part } from "@google/genai";
-import { readFileSync } from "node:fs";
+import { readFileSync, unlinkSync } from "node:fs";
 import { join } from "node:path";
 
 import { writeLog, getSavedHistory } from "./log.ts";
 
-export async function DiscordClient(bot_token: string, gemini_key: string, activities: string[], refresh_interval_sec: number, system_config: string, inforamtion_padding: string, max_req_per_min: number) {
+export async function DiscordClient(bot_token: string, gemini_key: string, activities: string[], refresh_interval_sec: number, system_config: string, inforamtion_padding: string, max_req_per_min: number, maxOutputTokens: number, temperature: number, top_p: number, top_k: number) {
     try {
         var requestCount = 0;
 
-        const history = getSavedHistory();
+        var history = getSavedHistory();
 
         const ai = new GoogleGenAI({ apiKey: gemini_key });
 
@@ -38,7 +38,37 @@ export async function DiscordClient(bot_token: string, gemini_key: string, activ
             setInterval(() => {
                 client.user.setActivity({ name: activities[Math.floor(Math.random() * activities.length)], type: ActivityType.Listening });
             }, refresh_interval_sec * 1000);
+
+            (new REST({ version: '10' }).setToken(bot_token)).put(Routes.applicationCommands(client.user!.id), {
+                body: [
+                    new SlashCommandBuilder()
+                    .setName("reset")
+                    .setDescription("Reset the bot message history")
+                    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+                ],
+            });
         });
+
+        client.on("interactionCreate", async (interaction: Interaction) => {
+            if (!interaction.isCommand()) return;
+            switch (interaction.commandName) {
+                case "reset":
+                    const logFilePath = join(import.meta.dir, "..", "log.txt");
+                    const attachment = new AttachmentBuilder(logFilePath, { name: 'log.txt' });
+
+                    const reply = await interaction.reply({flags: MessageFlags.Ephemeral, content: "History cleared", files: [attachment]});
+
+                    if(reply.id) {
+                        unlinkSync(logFilePath);
+
+                        history = [];
+                    }
+                    break;
+            
+                default:
+                    break;
+            }
+        })
 
         setInterval(() => {
             requestCount = 0;
@@ -60,6 +90,8 @@ export async function DiscordClient(bot_token: string, gemini_key: string, activ
                     return;
                 }
 
+                msg.channel.sendTyping();
+
                 writeLog(`user: ${msg.member.nickname || msg.author.displayName} ; text: ${message}`)
 
                 const chat = ai.chats.create({ model: 'gemini-2.0-flash', history });
@@ -67,7 +99,10 @@ export async function DiscordClient(bot_token: string, gemini_key: string, activ
                     message: `user: ${msg.member.nickname || msg.author.displayName} text: ${message}`,
                     config: {
                         systemInstruction: system_config + inforamtion_padding + modelInformations,
-                        maxOutputTokens: 300
+                        maxOutputTokens: maxOutputTokens,
+                        temperature: temperature,
+                        topK: top_k,
+                        topP: top_p
                     }
                 });
 

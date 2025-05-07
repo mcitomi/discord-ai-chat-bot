@@ -8,6 +8,12 @@ if (!existsSync(configDir)) {
     mkdirSync(configDir);
 }
 
+const logFile = join(import.meta.dir, "log.txt");
+if (!existsSync(logFile)) {
+    console.log("log.txt created!");
+    writeFileSync(logFile, "");
+}
+
 const customConfig = join(import.meta.dir, "config", "custom.json");
 if (!existsSync(customConfig)) {
     console.log("custom.json created!");
@@ -27,10 +33,14 @@ if (!existsSync(modelConfig)) {
     writeFileSync(modelConfig, JSON.stringify({
         "system_config": "You are a discord chat bot.",
         "inforamtion_padding": "Information datapack: ",
-        "max_req_per_min": 15
+        "max_req_per_min": 15,
+        "maxOutputTokens" : 300,
+        "temperature": 1,
+        "top_p": 0.95,
+        "top_k": 64
     }, null, 4));
 }
-const { system_config, inforamtion_padding, max_req_per_min } = await import(modelConfig);
+const { system_config, inforamtion_padding, max_req_per_min, maxOutputTokens, temperature, top_p, top_k } = await import(modelConfig);
 
 const secretConfig = join(import.meta.dir, "config", "secrets.json");
 if (!existsSync(secretConfig)) {
@@ -50,4 +60,4 @@ if (!existsSync(dataText)) {
 
 console.log("- Hello via Bun!");
 
-DiscordClient(bot_token, gemini_key, activities, refresh_interval_sec, system_config, inforamtion_padding, max_req_per_min);
+DiscordClient(bot_token, gemini_key, activities, refresh_interval_sec, system_config, inforamtion_padding, max_req_per_min, maxOutputTokens, temperature, top_p, top_k);

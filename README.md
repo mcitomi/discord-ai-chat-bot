@@ -36,7 +36,11 @@ bun run index.ts
 {
     "system_config": "You are a discord chat bot.", // The main system instruction
     "inforamtion_padding": "Information datapack: ",    // After this text comes the content of "data.txt"
-    "max_req_per_min": 15   // You can control the maximum number of requests (15 is the Gemini 2.0 flash free limit)
+    "max_req_per_min": 15,   // You can control the maximum number of requests (15 is the Gemini 2.0 flash free limit)
+    "maxOutputTokens" : 300,
+    "temperature": 1,   // Default gemini prompt values https://cloud.google.com/vertex-ai/generative-ai/docs/learn/prompts/adjust-parameter-values
+    "top_p": 0.95,
+    "top_k": 64
 }
 ```
 `data.txt`: In this file you can enter the AI ​​model tuning data, This will still be given as a "system instruction".
