@@ -56,7 +56,7 @@ export async function DiscordClient(bot_token: string, gemini_key: string, activ
                     const logFilePath = join(import.meta.dir, "..", "log.txt");
                     const attachment = new AttachmentBuilder(logFilePath, { name: 'log.txt' });
 
-                    const reply = await interaction.reply({flags: MessageFlags.Ephemeral, content: "History cleared", files: [attachment]});
+                    const reply = await interaction.reply({content: "History cleared", files: [attachment]});
 
                     if(reply.id) {
                         unlinkSync(logFilePath);
@@ -106,7 +106,7 @@ export async function DiscordClient(bot_token: string, gemini_key: string, activ
                     }
                 });
 
-                msg.channel.send(response.text.slice(0, 1700));
+                msg.reply(response.text.slice(0, 1700));
 
                 writeLog(`user: aimodel ; text: ${response.text.slice(0, 1700)}`);
 
