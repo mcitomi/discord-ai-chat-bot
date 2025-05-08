@@ -106,9 +106,13 @@ export async function DiscordClient(bot_token: string, gemini_key: string, activ
                     }
                 });
 
-                msg.reply(response.text.slice(0, 1700));
+                msg.reply(response?.text?.slice(0, 1700));
 
-                writeLog(`user: aimodel ; text: ${response.text.slice(0, 1700)}`);
+                if(!response.text) {
+                    msg.reply({content: `Unable to generate response, reason: ${response.promptFeedback?.blockReason}`});
+                }
+
+                writeLog(`user: aimodel ; text: ${response?.text?.slice(0, 1700)}`);
 
                 history.push(
                     {
