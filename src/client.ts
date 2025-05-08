@@ -109,7 +109,9 @@ export async function DiscordClient(bot_token: string, gemini_key: string, activ
                 msg.reply(response?.text?.slice(0, 1700));
 
                 if(!response.text) {
-                    msg.reply({content: `Unable to generate response, reason: ${response.promptFeedback?.blockReason}`});
+                    msg.reply({content: `⚠️ Unable to generate response, reason: ${response.promptFeedback?.blockReason}`}).catch((e) => {
+                        console.error(e);
+                    });
                 }
 
                 writeLog(`user: aimodel ; text: ${response?.text?.slice(0, 1700)}`);
@@ -138,7 +140,6 @@ export async function DiscordClient(bot_token: string, gemini_key: string, activ
         client.login(bot_token).catch((e) => {
             console.error("Invalid Discord bot token!");
             process.exit(0);
-            return;
         });
 
     } catch (error) {
