@@ -80,7 +80,7 @@ export async function DiscordClient(bot_token: string, gemini_key: string, activ
                         .setTimestamp()
                         .setFooter({ text: "www.mcitomi.hu | https://github.com/mcitomi/discord-ai-chat-bot" })
                         .setDescription(
-                            
+
                             `📁 Logfile size: ${logStat.size} byte.\n` +
                             `🌐 Latency: ${client.ws.ping} ms.\n` +
                             `${geminiPromptResponseTimes.length ? `🤖 Last prompt gen time: ${geminiPromptResponseTimes[geminiPromptResponseTimes.length - 1]} ms.\n` : ""}` +
@@ -117,8 +117,6 @@ export async function DiscordClient(bot_token: string, gemini_key: string, activ
 
                 msg.channel.sendTyping();
 
-                writeLog(`user: ${msg.member.nickname || msg.author.displayName} ; text: ${message}`)
-
                 const chat = ai.chats.create({ model: 'gemini-2.0-flash', history });
 
                 const sentResponseTimestamp = Date.now();
@@ -143,7 +141,8 @@ export async function DiscordClient(bot_token: string, gemini_key: string, activ
                     });
                     return;
                 }
-
+                writeLog(`user: ${msg.member.nickname || msg.author.displayName} ; text: ${message}`);
+                
                 msg.reply(response?.text?.slice(0, 1700));
 
                 writeLog(`user: aimodel ; text: ${response?.text?.slice(0, 1700)}`);
