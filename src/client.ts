@@ -84,7 +84,7 @@ export async function DiscordClient(bot_token: string, gemini_key: string, activ
                             `📁 Logfile size: ${logStat.size} byte.\n` +
                             `🌐 Latency: ${client.ws.ping} ms.\n` +
                             `${geminiPromptResponseTimes.length ? `🤖 Last prompt gen time: ${geminiPromptResponseTimes[geminiPromptResponseTimes.length - 1]} ms.\n` : ""}` +
-                            `${geminiPromptResponseTimes.length ? `📡 AVG prompt gen time: ${(geminiPromptResponseTimes.reduce((a, b) => a + b, 0)) / geminiPromptResponseTimes.length} ms.\n` : ""}` +
+                            `${geminiPromptResponseTimes.length ? `📡 AVG prompt gen time: ${Math.floor((geminiPromptResponseTimes.reduce((a, b) => a + b, 0)) / geminiPromptResponseTimes.length)} ms.\n` : ""}` +
                             `🕐 Uptime: ${formatUptime(process.uptime())}`
                         );
 
