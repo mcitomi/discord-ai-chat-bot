@@ -72,23 +72,27 @@ export async function DiscordClient(bot_token: string, gemini_key: string, activ
                     break;
 
                 case "info":
-                    const logStat = statSync(join(import.meta.dir, "..", "log.txt"));
+                    try {
+                        const logStat = statSync(join(import.meta.dir, "..", "log.txt"));
 
-                    const embed = new EmbedBuilder()
-                        .setTitle(`${client.user.username}'s informations`)
-                        .setColor(Colors.Yellow)
-                        .setTimestamp()
-                        .setFooter({ text: "www.mcitomi.hu | https://github.com/mcitomi/discord-ai-chat-bot" })
-                        .setDescription(
+                        const embed = new EmbedBuilder()
+                            .setTitle(`${client.user.username}'s informations`)
+                            .setColor(Colors.Yellow)
+                            .setTimestamp()
+                            .setFooter({ text: "www.mcitomi.hu | https://github.com/mcitomi/discord-ai-chat-bot" })
+                            .setDescription(
 
-                            `📁 Logfile size: ${logStat.size} byte.\n` +
-                            `🌐 Latency: ${client.ws.ping} ms.\n` +
-                            `${geminiPromptResponseTimes.length ? `🤖 Last prompt gen time: ${geminiPromptResponseTimes[geminiPromptResponseTimes.length - 1]} ms.\n` : ""}` +
-                            `${geminiPromptResponseTimes.length ? `📡 AVG prompt gen time: ${Math.floor((geminiPromptResponseTimes.reduce((a, b) => a + b, 0)) / geminiPromptResponseTimes.length)} ms.\n` : ""}` +
-                            `🕐 Uptime: ${formatUptime(process.uptime())}`
-                        );
+                                `📁 Logfile size: ${logStat.size} byte.\n` +
+                                `🌐 Latency: ${client.ws.ping} ms.\n` +
+                                `${geminiPromptResponseTimes.length ? `🤖 Last prompt gen time: ${geminiPromptResponseTimes[geminiPromptResponseTimes.length - 1]} ms.\n` : ""}` +
+                                `${geminiPromptResponseTimes.length ? `📡 AVG prompt gen time: ${Math.floor((geminiPromptResponseTimes.reduce((a, b) => a + b, 0)) / geminiPromptResponseTimes.length)} ms.\n` : ""}` +
+                                `🕐 Uptime: ${formatUptime(process.uptime())}`
+                            );
 
-                    interaction.reply({ embeds: [embed] });
+                        interaction.reply({ embeds: [embed] });
+                    } catch (error) {
+                        interaction.reply({ content: "❌ Unable to get informations" });
+                    }
                     break;
                 default:
                     break;
@@ -133,7 +137,7 @@ export async function DiscordClient(bot_token: string, gemini_key: string, activ
                     return { text: null, promptFeedback: e.message }
                 });
 
-                geminiPromptResponseTimes.push(Date.now() - sentResponseTimestamp);
+                geminiPromptResponseTimes.push(Date.now() - sentResponseTimestamp);                
 
                 if (!response.text) {
                     msg.reply({ content: `⚠️ Unable to generate response, reason: ${response.promptFeedback?.blockReason || "Unknown - Gemini Google server error / overloaded 🔥🔥"}` }).catch((e) => {
@@ -142,7 +146,7 @@ export async function DiscordClient(bot_token: string, gemini_key: string, activ
                     return;
                 }
                 writeLog(`user: ${msg.member.nickname || msg.author.displayName} ; text: ${message}`);
-                
+
                 msg.reply(response?.text?.slice(0, 1700));
 
                 writeLog(`user: aimodel ; text: ${response?.text?.slice(0, 1700)}`);
