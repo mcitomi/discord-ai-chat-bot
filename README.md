@@ -53,6 +53,10 @@ bun run index.ts
 }
 ```
 
+## 📁 (Slash) Commands
+- /reset : This deletes the history log file, so all previous conversations are deleted from the bot's memory. REQUIRES ADMINISTRATOR DISCORD PERM.
+- /info : Displays the logfile size, discord response time, uptime, and gemini api response latency.
+
 ## 📝 About
 The program will create a log.txt in the main folder, where all previous conversations are stored. The bot will load these after each restart and pass them to the AI ​​model as message history.
 
